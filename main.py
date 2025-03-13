@@ -45,9 +45,9 @@ def start(message):
     bot.register_next_step_handler(msg, get_address)
 
 # Sertifikat rasmini yuklash
-certificate_path = "/home/jahon/PycharmProjects/Weking_tmebot/jahon_sertifikat.jpg"  # Yuklangan fayl
-output_path = "/home/jahon/PycharmProjects/Weking_tmebot/jahon_sertifikat1.jpg"  # Natija fayli
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+certificate_path = os.path.join(BASE_DIR, "jahon_sertifikat.jpg")
 
 
 
