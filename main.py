@@ -14,6 +14,9 @@ TEST_FILE = "test_savollari.json"
 USERS_FILE = "users.json"
 CERTIFICATE_FILE = "/home/jahon/PycharmProjects/Weking_tmebot/250697684196070-1.pdf"
 
+# Kanal usernamelari
+CHANNELS = ["@WebKing_uz", "@Baliqchi_MMTB"]
+
 
 def load_data(file):
     try:
@@ -32,17 +35,58 @@ test_savollari = load_data(TEST_FILE)
 users = load_data(USERS_FILE)
 
 
+def check_subscription(user_id):
+    """Foydalanuvchi barcha kanallarga a'zo bo'lganligini tekshiradi."""
+    for channel in CHANNELS:
+        try:
+            chat_member = bot.get_chat_member(chat_id=channel, user_id=user_id)
+            if chat_member.status not in ["member", "administrator", "creator"]:
+                return False  # Agar a'zo bo'lmasa
+        except Exception as e:
+            print(f"Xatolik: {e}")
+            return False
+    return True  # Agar barcha kanallarga a'zo bo'lsa
+
+
 @bot.message_handler(commands=['start'])
 def start(message):
     chat_id = message.chat.id
-    user = next((u for u in users if u['id'] == chat_id), None)
 
+    if not check_subscription(chat_id):
+        # Agar foydalanuvchi a'zo bo'lmasa, unga kanallarga a'zo bo‘lishni so‘raymiz
+        channels_list = "\n".join([f"👉 {channel}" for channel in CHANNELS])
+        markup = InlineKeyboardMarkup()
+        for channel in CHANNELS:
+            btn = InlineKeyboardButton("🔗 Kanalga qo'shilish", url=f"https://t.me/{channel.replace('@', '')}")
+            markup.add(btn)
+        markup.add(InlineKeyboardButton("✅ Tekshirish", callback_data="check_subscription"))
+
+        bot.send_message(chat_id,
+                         f"❌ Botdan foydalanish uchun quyidagi kanallarga a'zo bo'ling:\n\n{channels_list}\n\n"
+                         "✅ A'zo bo'lgach, *Tekshirish* tugmasini bosing!",
+                         reply_markup=markup, parse_mode="Markdown")
+        return
+
+    # Foydalanuvchi allaqachon ro‘yxatdan o‘tgan bo‘lsa, menyuni yuboramiz
+    user = next((u for u in users if u['id'] == chat_id), None)
     if user:
         send_main_menu(chat_id)
         return
 
     msg = bot.send_message(chat_id, "👋 Assalomu alaykum! Ismingizni va familiyangizni kiriting:")
     bot.register_next_step_handler(msg, get_address)
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "check_subscription")
+def check_subscription_callback(call):
+    """Tekshirish tugmachasi bosilganda ishlaydi."""
+    chat_id = call.message.chat.id
+    if check_subscription(chat_id):
+        bot.send_message(chat_id, "✅ Siz barcha kanallarga a'zo bo‘lgansiz. Botdan foydalanishingiz mumkin!")
+        start(call.message)  # Foydalanuvchini davom ettirish
+    else:
+        bot.answer_callback_query(call.id, "❌ Siz hali ham barcha kanallarga a'zo bo‘lmadingiz!")
+
 
 # Sertifikat rasmini yuklash
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
