@@ -10,5 +10,18 @@
             "IT": 3
         },
         "total_score": 3
+    },
+    {
+        "id": 1808774257,
+        "name": "jahongit Otadjonov",
+        "address": "Andijon shaxar",
+        "school": "37",
+        "phone": "901550280",
+        "age": 11,
+        "results": {
+            "IT": 2,
+            "Robotatexnika": 2
+        },
+        "total_score": 4
     }
 ]

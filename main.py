@@ -47,8 +47,11 @@ def start(message):
 # Sertifikat rasmini yuklash
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-certificate_path = os.path.join(BASE_DIR, "jahon_sertifikat.jpg")
-
+certificate_pathbiznes = os.path.join(BASE_DIR, "photo_1_2025-03-16_02-04-31.jpg")
+certificate_pathit = os.path.join(BASE_DIR, "photo_2_2025-03-16_02-04-31.jpg")
+certificate_pathtil = os.path.join(BASE_DIR, "photo_4_2025-03-16_02-04-31.jpg")
+certificate_pathtibbiyot = os.path.join(BASE_DIR, "photo_5_2025-03-16_02-04-31.jpg")
+certificate_pathitharbiy = os.path.join(BASE_DIR, "photo_3_2025-03-16_02-04-31.jpg")
 
 
 def get_address(message):
@@ -235,9 +238,9 @@ def calculate_results(chat_id):
 
 def show_ranking(chat_id):
     sorted_users = sorted(users, key=lambda u: u.get("total_score", 0), reverse=True)
-    ranking_text = "🏆 Eng kuchli TOP 10 foydalanuvchilar:\n\n"
+    ranking_text = "🏆 Eng kuchli TOP  foydalanuvchilar:\n\n"
 
-    for i, user in enumerate(sorted_users[:10], start=1):
+    for i, user in enumerate(sorted_users[:1000], start=1):
         ranking_text += f"{i}. {user['name']} - {user.get('total_score', 0)} ball\n"
 
     bot.send_message(chat_id, ranking_text)
@@ -249,23 +252,47 @@ def is_in_top_10(user):
 
 
 def send_certificate(chat_id, user):
+    global image, top_score
     user_name = user['name']  # Foydalanuvchi ismini olish
-
     # Rasmni ochish
-    image = Image.open(certificate_path)
-    draw = ImageDraw.Draw(image)
+    if user["results"]:
+        top_career = max(user["results"], key=user["results"].get)  # Eng yuqori ball olgan kasb
+        top_score = user["results"][top_career]  # Eng yuqori ball
+        print(f"Foydalanuvchi {user_name} eng yuqori ballni '{top_career}' kasbida oldi: {top_score}")
+    else:
+        top_career = "Noma'lum"
+        print(f"Foydalanuvchi {user_name} natijalari mavjud emas!")
 
+
+    if top_career == 'IT':
+        image =  Image.open(certificate_pathit)
+    elif top_career =='Biznes':
+        image =  Image.open(certificate_pathbiznes)
+    elif top_career =='Filologiya':
+        image =  Image.open(certificate_pathtibbiyot)
+    elif top_career == 'Robotatexnika':
+        image = Image.open(certificate_pathitharbiy)
+
+    draw = ImageDraw.Draw(image)
+    ball = ImageDraw.Draw(image)
     # Shrift sozlamalari
+
     font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-    font_size = 80
+    font_size = 35
     font = ImageFont.truetype(font_path, font_size)
 
-    # Ismni joylashtirish koordinatalari
-    text_position = (1000, 1000)  # Matnni joylashtirish uchun mos keladigan joy
-    text_color = (0, 0, 0)  # Qora rang
+    font_path1 = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    font_size1 = 20
+    font1 = ImageFont.truetype(font_path1, font_size1)
 
+    # Ismni joylashtirish koordinatalari
+    text_position = (400, 400)  # Matnni joylashtirish uchun mos keladigan joy
+    text_color = (0, 0, 0)  # Qora rang
+    text_position1 = (710, 548)  # Matnni joylashtirish uchun mos keladigan joy
+    text_color1 = (0, 0, 0)
     # Ismni rasmga qo‘shish
     draw.text(text_position, user_name, font=font, fill=text_color)
+    ball.text(text_position1, f"  {top_score}  ball", font=font1, fill=text_color1)
 
     # Rasmni saqlash
     output_path = f"/home/jahon/PycharmProjects/Weking_tmebot/certificate_{chat_id}.jpg"
@@ -276,7 +303,7 @@ def send_certificate(chat_id, user):
 
     if os.path.exists(output_path):
         with open(output_path, "rb") as cert:
-            bot.send_document(chat_id, cert, caption=f"🎉 Tabriklaymiz, {user['name']}! Siz TOP 10 talikka kirdingiz!")
+            bot.send_document(chat_id, cert, caption=f"🎉 Tabriklaymiz, {user['name']}! Siz TOP  talikka kirdingiz!")
     else:
         bot.send_message(chat_id, "❌ Sertifikat fayli topilmadi!")
     if os.path.exists(output_path):
