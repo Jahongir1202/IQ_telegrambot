@@ -12,7 +12,6 @@ bot = telebot.TeleBot(TOKEN)
 
 TEST_FILE = "test_savollari.json"
 USERS_FILE = "users.json"
-CERTIFICATE_FILE = "/home/jahon/PycharmProjects/Weking_tmebot/250697684196070-1.pdf"
 
 # Kanal usernamelari
 CHANNELS = ["@WebKing_uz", "@Baliqchi_MMTB"]
@@ -339,7 +338,7 @@ def send_certificate(chat_id, user):
     ball.text(text_position1, f"  {top_score}  ball", font=font1, fill=text_color1)
 
     # Rasmni saqlash
-    output_path = f"/home/jahon/PycharmProjects/Weking_tmebot/certificate_{chat_id}.jpg"
+    output_path = f"IQ_telegrambot/certificate_{chat_id}.jpg"
     image.save(output_path)
 
 
