@@ -4,11 +4,14 @@ from dotenv import load_dotenv
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 import os
 from PIL import Image, ImageDraw, ImageFont
+import time
 
 
 
 TOKEN = "7826152623:AAGPlVwcScLDOo7LxC_xAUK24M0KSDttODY"
 bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
+bot.timeout = 60
 
 TEST_FILE = "test_savollari.json"
 USERS_FILE = "users.json"
@@ -50,7 +53,7 @@ def check_subscription(user_id):
 @bot.message_handler(commands=['start'])
 def start(message):
     chat_id = message.chat.id
-
+    time.sleep(2)
     if not check_subscription(chat_id):
         # Agar foydalanuvchi a'zo bo'lmasa, unga kanallarga a'zo bo‘lishni so‘raymiz
         channels_list = "\n".join([f"👉 {channel}" for channel in CHANNELS])
@@ -102,7 +105,7 @@ def get_address(message):
     name = message.text.strip()
 
     markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    locations = ["Andijon shaxar", "Chinobot", "Jarqo'rg'on", "Baliqchi"]
+    locations = ["Andijon shaxar", "Andijon tumani","Asaka tumani","", "Jarqo'rg'on tumani", "Baliqchi tumani" ,"Bo'ston tumani","Bulpqboshi tumani","Izbosgan tumani","Jallaquduq tumani","Marhamat tumani"," Oltinko'l tumani","Paxtaobot tumani","Qo'rg'ontepa tumani","Qo'rg'ontepa tumani","Shaxrixon tumani","Ulug'nor tumani", "Xo'jaobot tumani","Xonobot shaxar"]
 
     for location in locations:
         markup.add(KeyboardButton(location))
@@ -152,37 +155,49 @@ def check_age(message, name, address, school, phone):
 
     bot.send_message(chat_id, "✅ Ma'lumotlaringiz saqlandi!")
     send_main_menu(chat_id)
-
-
-def send_main_menu(chat_id):
-    markup = InlineKeyboardMarkup()
-    markup.row_width = 2
-    markup.add(
-        InlineKeyboardButton("📋 Testni boshlash", callback_data="start_test"),
-        InlineKeyboardButton("📊 Mening natijam", callback_data="my_results"),
-        InlineKeyboardButton("ℹ️ Men haqimda", callback_data="my_info"),
-        InlineKeyboardButton("👥 Do‘stlarni taklif etish", switch_inline_query="Do‘stlarimni bu testga taklif qilaman!"),
-        InlineKeyboardButton("🏆 Reyting", callback_data="ranking")
-    )
-    bot.send_message(chat_id, "👇 Quyidagilardan birini tanlang:", reply_markup=markup)
-
 def show_my_results(chat_id):
     """Foydalanuvchining test natijalarini ko‘rsatish."""
     user = next((u for u in users if u['id'] == chat_id), None)
     if not user:
-        bot.send_message(chat_id, "Siz ro'yxatdan o'tmagansiz. Iltimos, /start buyrug'ini bering.")
+        bot.send_message(chat_id, "Iltimos, avval /start buyrug'ini bering va ro'yxatdan o'ting!")
         return
 
-    if not user['results']:
+    if not user.get("results"):
         bot.send_message(chat_id, "Siz hali testdan o'tmagansiz.")
         return
 
-    results_text = "📊 *Sizning test natijalaringiz:*\n\n"
-    for kasb, ball in user['results'].items():
-        results_text += f"🔹 {kasb}: {ball} ball\n"
+    score = user.get("total_score", 0)
+    bot.send_message(chat_id, f"📊 Sizning test natijangiz: {score} ball")
 
-    bot.send_message(chat_id, results_text, parse_mode="Markdown")
 
+def send_main_menu(chat_id):
+    """Asosiy menyuni oddiy tugmalar shaklida chiqarish."""
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    markup.add(
+        KeyboardButton("📋 Testni boshlash"),
+        KeyboardButton("📊 Mening natijam"),
+        KeyboardButton("ℹ️ Men haqimda"),
+        KeyboardButton("🏆 Reyting")
+    )
+
+    bot.send_message(chat_id, "👇 Quyidagilardan birini tanlang:", reply_markup=markup)
+
+@bot.message_handler(func=lambda message: message.text in ["📋 Testni boshlash", "📊 Mening natijam", "ℹ️ Men haqimda", "🏆 Reyting"])
+def handle_main_menu(message):
+    chat_id = message.chat.id
+    text = message.text
+
+    if text == "📋 Testni boshlash":
+        start_test(chat_id)
+
+    elif text == "📊 Mening natijam":
+        show_my_results(chat_id)
+
+    elif text == "ℹ️ Men haqimda":
+        show_my_info(chat_id)
+
+    elif text == "🏆 Reyting":
+        show_ranking(chat_id)
 
 def show_my_info(chat_id):
     """Foydalanuvchining shaxsiy ma'lumotlarini ko‘rsatish."""
@@ -199,43 +214,84 @@ def show_my_info(chat_id):
 
     bot.send_message(chat_id, info, parse_mode="Markdown")
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback_query(call):
-    chat_id = call.message.chat.id
-    if call.data == "start_test":
-        start_test(chat_id)
-    elif call.data == "my_results":
-        show_my_results(chat_id)
-    elif call.data == "my_info":
-        show_my_info(chat_id)
-    elif call.data == "ranking":
-        show_ranking(chat_id)
+
+
 
 
 @bot.message_handler(commands=['test'])
 def start_test(chat_id):
+    """Testni boshlash va birinchi savolni chiqarish."""
     user = next((u for u in users if u['id'] == chat_id), None)
     if not user:
         bot.send_message(chat_id, "Iltimos, avval /start buyrug'ini bering va ro'yxatdan o'ting!")
         return
     user['results'] = {}
+    user['in_test'] = True  # 🟢 Test boshlandi
     ask_question(chat_id, 0)
 
-
 def ask_question(chat_id, index):
+    """Test savollarini chiqarish (variantlar inline tugma sifatida chiqadi)."""
+    user = next((u for u in users if u['id'] == chat_id), None)
+    if not user:
+        return
+
     if index >= len(test_savollari):
+        user['in_test'] = False  # 🔴 Test tugadi
         calculate_results(chat_id)
         return
 
     question = test_savollari[index]
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+
+    # 🟢 Inline tugmalar yaratish
+    markup = InlineKeyboardMarkup()
     for variant in question['variants']:
-        markup.add(KeyboardButton(f"{variant['text']} ({variant['kasb']})"))
+        markup.add(InlineKeyboardButton(variant['text'], callback_data=f"answer_{index}_{variant['kasb']}_{variant['ball']}"))
 
-    msg = bot.send_message(chat_id, question['savol'], reply_markup=markup)
-    bot.register_next_step_handler(msg, lambda msg: save_answer(msg, index))
+    bot.send_message(chat_id, question['savol'], reply_markup=markup)
+@bot.callback_query_handler(func=lambda call: call.data.startswith("answer_"))
+def process_answer(call):
+    """Foydalanuvchi javob tugmasini bosganda ishlov berish."""
+    chat_id = call.message.chat.id
+    _, index, kasb, ball = call.data.split("_")
+    index, ball = int(index), int(ball)
 
+    user = next((u for u in users if u['id'] == chat_id), None)
+    if user:
+        user['results'][kasb] = user['results'].get(kasb, 0) + ball
+        save_data(USERS_FILE, users)
 
+    bot.answer_callback_query(call.id, "Javob qabul qilindi ✅")
+    ask_question(chat_id, index + 1)
+def calculate_results(chat_id):
+    """Test natijalarini hisoblash va natijalarni chiqarish."""
+    user = next((u for u in users if u['id'] == chat_id), None)
+    if not user:
+        return
+
+    user['in_test'] = False  # 🔴 Test yakunlandi
+    results = user['results']
+
+    # 🔹 Eski klaviaturani olib tashlaymiz (bo‘sh klaviatura yuborish orqali)
+    bot.send_message(chat_id, "✅ Test yakunlandi. Natijalaringiz:", reply_markup=InlineKeyboardMarkup())
+
+    if not results:
+        bot.send_message(chat_id, "Siz hech qanday savolga javob bermadingiz.")
+        send_main_menu(chat_id)  # 🔥 Test natijasidan keyin menyuga qaytish
+        return
+
+    top_kasb = max(results, key=results.get)
+    total_points = sum(results.values())
+    user['total_score'] = total_points
+    save_data(USERS_FILE, users)
+
+    bot.send_message(chat_id,
+                     f"📋 Sizning kasbingiz: {top_kasb} ({results[top_kasb]} ball)\n🎯 Umumiy ball: {total_points}")
+
+    show_ranking(chat_id)  # 🔥 Reyting ko‘rsatish
+    send_main_menu(chat_id)  # 🔥 Test natijasidan keyin menyuga qaytish
+
+    if is_in_top_10(user):
+        send_certificate(chat_id, user)
 def save_answer(message, index):
     chat_id = message.chat.id
     answer = message.text.strip()
@@ -253,30 +309,6 @@ def save_answer(message, index):
 
     ask_question(chat_id, index + 1)
 
-
-def calculate_results(chat_id):
-    user = next((u for u in users if u['id'] == chat_id), None)
-    if not user:
-        return
-
-    results = user['results']
-    if not results:
-        bot.send_message(chat_id, "Siz hech qanday savolga javob bermadingiz.")
-        send_main_menu(chat_id)  # 🔥 Test natijasidan keyin menyuga qaytish
-        return
-
-    top_kasb = max(results, key=results.get)
-    total_points = sum(results.values())
-    user['total_score'] = total_points
-    save_data(USERS_FILE, users)
-
-    bot.send_message(chat_id, f"📋 Sizning kasbingiz: {top_kasb} ({results[top_kasb]} ball)\n🎯 Umumiy ball: {total_points}")
-
-    show_ranking(chat_id)  # 🔥 Reyting ko‘rsatish
-    send_main_menu(chat_id)  # 🔥 Test natijasidan keyin menyuga qaytish
-
-    if is_in_top_10(user):
-        send_certificate(chat_id, user)
 
 
 def show_ranking(chat_id):
@@ -325,7 +357,7 @@ def send_certificate(chat_id, user):
     font = ImageFont.truetype(font_path, font_size)
 
     font_path1 = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-    font_size1 = 20
+    font_size1 = 17
     font1 = ImageFont.truetype(font_path1, font_size1)
 
     # Ismni joylashtirish koordinatalari
@@ -338,7 +370,7 @@ def send_certificate(chat_id, user):
     ball.text(text_position1, f"  {top_score}  ball", font=font1, fill=text_color1)
 
     # Rasmni saqlash
-    output_path = f"IQ_telegrambot/certificate_{chat_id}.jpg"
+    output_path = f"/home/jahon/PycharmProjects/Weking_tmebot/certificate_{chat_id}.jpg"
     image.save(output_path)
 
 
@@ -351,5 +383,18 @@ def send_certificate(chat_id, user):
         bot.send_message(chat_id, "❌ Sertifikat fayli topilmadi!")
     if os.path.exists(output_path):
         os.remove(output_path)
+
+def run_bot():
+    while True:
+        try:
+            print("Bot ishga tushdi...")
+            bot.polling(none_stop=True, timeout=60)
+        except Exception as e:
+            print(f"Xatolik yuz berdi: {e}")
+            time.sleep(5)  # 5 soniya kutib, botni qayta ishga tushirish
+
+if __name__ == "__main__":
+    run_bot()
+
 
 bot.polling(none_stop=True)

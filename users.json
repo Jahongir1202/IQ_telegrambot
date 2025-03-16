@@ -1,27 +1,28 @@
 [
     {
-        "id": 7343507900,
-        "name": "tytt",
-        "address": "Chinobot",
-        "school": "66",
-        "phone": "54456",
-        "age": 11,
-        "results": {
-            "IT": 3
-        },
-        "total_score": 3
-    },
-    {
         "id": 1808774257,
-        "name": "jahongit Otadjonov",
+        "name": "Jahongir",
         "address": "Andijon shaxar",
         "school": "37",
         "phone": "901550280",
         "age": 11,
         "results": {
-            "IT": 2,
-            "Robotatexnika": 2
+            "IT": 2
         },
-        "total_score": 4
+        "total_score": 41,
+        "in_test": true
+    },
+    {
+        "id": 1447868051,
+        "name": "Sardorbek Turdaliyev",
+        "address": "Baliqchi tumani",
+        "school": "36",
+        "phone": "999825920",
+        "age": 14,
+        "results": {
+            "IT": 3
+        },
+        "total_score": 3,
+        "in_test": false
     }
 ]
