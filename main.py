@@ -1,4 +1,7 @@
 import json
+import signal
+import sys
+
 import telebot
 from dotenv import load_dotenv
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
@@ -405,17 +408,22 @@ def send_certificate(chat_id, user):
     if os.path.exists(output_path):
         os.remove(output_path)
 
-def run_bot():
-    while True:
-        try:
-            print("Bot ishga tushdi...")
-            bot.polling(none_stop=True, timeout=60)
-        except Exception as e:
-            print(f"Xatolik yuz berdi: {e}")
-            time.sleep(5)  # 5 soniya kutib, botni qayta ishga tushirish
+    def signal_handler(sig, frame):
+        print("Bot to‘xtatildi.")
+        sys.exit(0)
 
-if __name__ == "__main__":
-    run_bot()
+    signal.signal(signal.SIGINT, signal_handler)  # Ctrl + C
+    signal.signal(signal.SIGTERM, signal_handler)  # kill buyruqlari
 
+    def run_bot():
+        while True:
+            try:
+                print("Bot ishga tushdi...")
+                bot.polling(none_stop=True, timeout=60)
+            except Exception as e:
+                print(f"Xatolik yuz berdi: {e}")
+                time.sleep(5)
 
+    if __name__ == "__main__":
+        run_bot()
 bot.polling(none_stop=True)
