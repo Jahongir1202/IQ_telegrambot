@@ -398,7 +398,7 @@ def send_certificate(chat_id, user):
     ball.text(text_position1, f"  {top_score}  ball", font=font1, fill=text_color1)
 
     # Rasmni saqlash
-    output_path = f"/home/jahon/PycharmProjects/Weking_tmebot/certificate_{chat_id}.jpg"
+    output_path = f"/IQ_telegrambot/certificate_{chat_id}.jpg"
     image.save(output_path)
 
 
