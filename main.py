@@ -343,9 +343,13 @@ def show_users(message):
 
     users_text = "📋 Ro'yxatdan o'tgan foydalanuvchilar:\n\n"
     for user in users:
+        results_text = "\n".join([f"📚 {subject}: {score}" for subject, score in user['results'].items()])
+
         users_text += f"🆔 ID: {user['id']}\n👤 Ism: {user['name']}\n🏠 Manzil: {user['address']}\n" \
                       f"📞 Telefon: {user['phone']}\n🎂 Yosh: {user['age']}\n" \
-                      f"🏫 Maktab: {user['school']}\n----------------------\n"
+                      f"🏫 Maktab: {user['school']}\n🎯 Natijalar:\n{results_text}\n" \
+                      f"⭐ Jami ball: {user['total_score']}\n----------------------\n"
+
 
     bot.send_message(chat_id, users_text)
 
