@@ -7,10 +7,13 @@
         "phone": "901550280",
         "age": 11,
         "results": {
-            "IT": 2
+            "IT": 13,
+            "Robotatexnika": 26,
+            "Filologiya": 2,
+            "Biznes": 4
         },
-        "total_score": 41,
-        "in_test": true
+        "total_score": 27,
+        "in_test": false
     },
     {
         "id": 1447868051,
@@ -20,9 +23,13 @@
         "phone": "999825920",
         "age": 14,
         "results": {
-            "IT": 3
+            "IT": 7,
+            "Robotatexnika": 14,
+            "Tibbiyot": 3,
+            "Filologiya": 6,
+            "Biznes": 3
         },
         "total_score": 3,
-        "in_test": false
+        "in_test": true
     }
 ]

@@ -260,7 +260,11 @@ def process_answer(call):
         user['results'][kasb] = user['results'].get(kasb, 0) + ball
         save_data(USERS_FILE, users)
 
-    bot.answer_callback_query(call.id, "Javob qabul qilindi ✅")
+    try:
+        bot.answer_callback_query(call.id, "Javob qabul qilindi ✅")
+    except Exception as e:
+        print(f"Callback query xatosi: {e}")
+
     ask_question(chat_id, index + 1)
 def calculate_results(chat_id):
     """Test natijalarini hisoblash va natijalarni chiqarish."""
@@ -324,6 +328,23 @@ def show_ranking(chat_id):
 def is_in_top_10(user):
     sorted_users = sorted(users, key=lambda u: u.get("total_score", 0), reverse=True)
     return user in sorted_users[:10]
+
+
+@bot.message_handler(commands=['users'])
+def show_users(message):
+    chat_id = message.chat.id
+
+    if not users:
+        bot.send_message(chat_id, "📂 Foydalanuvchilar ro'yxati bo'sh.")
+        return
+
+    users_text = "📋 Ro'yxatdan o'tgan foydalanuvchilar:\n\n"
+    for user in users:
+        users_text += f"🆔 ID: {user['id']}\n👤 Ism: {user['name']}\n🏠 Manzil: {user['address']}\n" \
+                      f"📞 Telefon: {user['phone']}\n🎂 Yosh: {user['age']}\n" \
+                      f"🏫 Maktab: {user['school']}\n----------------------\n"
+
+    bot.send_message(chat_id, users_text)
 
 
 def send_certificate(chat_id, user):
