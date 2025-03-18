@@ -11,7 +11,7 @@ import time
 
 
 
-TOKEN = "7826152623:AAGPlVwcScLDOo7LxC_xAUK24M0KSDttODY"
+TOKEN = "7700183734:AAHoY_qa68V6pQXBOl76rHRpTbVINUclmO0"
 bot = telebot.TeleBot(TOKEN)
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 bot.timeout = 60
