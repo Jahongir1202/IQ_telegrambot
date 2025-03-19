@@ -1,7 +1,7 @@
 import json
 import signal
 import sys
-
+import threading
 import telebot
 from dotenv import load_dotenv
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
@@ -439,8 +439,8 @@ def send_certificate(chat_id, user):
         print("Bot to‘xtatildi.")
         sys.exit(0)
 
-    signal.signal(signal.SIGINT, signal_handler)  # Ctrl + C
-    signal.signal(signal.SIGTERM, signal_handler)  # kill buyruqlari
+    if threading.current_thread() is threading.main_thread():
+    signal.signal(signal.SIGINT, signal_handler)  # kill buyruqlari
 
     def run_bot():
         while True:
