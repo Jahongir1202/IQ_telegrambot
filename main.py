@@ -452,5 +452,6 @@ def send_certificate(chat_id, user):
                 time.sleep(5)
 
     if __name__ == "__main__":
-        run_bot()
+    signal.signal(signal.SIGINT, signal_handler)
+
 bot.polling(none_stop=True)
