@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 import os
 from PIL import Image, ImageDraw, ImageFont
-import time
+import time        
 
 
 
