@@ -107,8 +107,17 @@ def get_address(message):
     chat_id = message.chat.id
     name = message.text.strip()
 
+    if len(name.split()) < 2:
+        msg = bot.send_message(chat_id, "❌ Iltimos, to'liq ismingiz va familiyangizni kiriting (Masalan: Ali Valiyev).")
+        bot.register_next_step_handler(msg, get_address)
+        return
+
     markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    locations = ["Andijon shaxar", "Andijon tumani","Asaka tumani","", "Jarqo'rg'on tumani", "Baliqchi tumani" ,"Bo'ston tumani","Bulpqboshi tumani","Izbosgan tumani","Jallaquduq tumani","Marhamat tumani"," Oltinko'l tumani","Paxtaobot tumani","Qo'rg'ontepa tumani","Qo'rg'ontepa tumani","Shaxrixon tumani","Ulug'nor tumani", "Xo'jaobot tumani","Xonobot shaxar"]
+    locations = ["Andijon shaxar", "Andijon tumani","Asaka tumani","Jarqo'rg'on tumani",
+                 "Baliqchi tumani", "Bo'ston tumani","Buloqboshi tumani","Izbosgan tumani",
+                 "Jallaquduq tumani","Marhamat tumani"," Oltinko'l tumani","Paxtaobot tumani",
+                 "Qo'rg'ontepa tumani","Shaxrixon tumani","Ulug'nor tumani",
+                 "Xojabod tumani","Xanabod shaxar"]
 
     for location in locations:
         markup.add(KeyboardButton(location))
@@ -125,17 +134,31 @@ def get_school(message, name):
 
 
 def get_phone(message, name, address):
-    chat_id = message.chat.id
-    school = message.text.strip()
-    msg = bot.send_message(chat_id, "📞 Telefon raqamingizni kiriting:")
-    bot.register_next_step_handler(msg, get_age, name, address, school)
+        chat_id = message.chat.id
+        school = message.text.strip()
 
+        msg = bot.send_message(chat_id, "📞 Telefon raqamingizni 9 ta raqam bilan kiriting:")
+        bot.register_next_step_handler(msg, validate_phone, name, address, school)
 
 def get_age(message, name, address, school):
     chat_id = message.chat.id
     phone = message.text.strip()
     msg = bot.send_message(chat_id, "🎂 Yoshingizni kiriting:")
     bot.register_next_step_handler(msg, check_age, name, address, school, phone)
+
+
+def validate_phone(message, name, address, school):
+    chat_id = message.chat.id
+    phone = message.text.strip()
+
+    if not phone.isdigit() or len(phone) != 9:
+        msg = bot.send_message(chat_id, "❌ Iltimos, telefon raqamingizni faqat 9 ta raqam bilan kiriting.")
+        bot.register_next_step_handler(msg, validate_phone, name, address, school)
+        return
+
+    msg = bot.send_message(chat_id, "🎂 Yoshingizni kiriting:")
+    bot.register_next_step_handler(msg, check_age, name, address, school, phone)
+
 
 
 def check_age(message, name, address, school, phone):

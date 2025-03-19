@@ -11,7 +11,6 @@
         {
             "savol": "Qaysi fan sizga eng qiziq?",
             "variants": [
-                {"text": "Matematika", "kasb": "IT", "ball": 1},
                 {"text": "Matematika", "kasb": "Biznes", "ball": 1},
                 {"text": "Biologiya", "kasb": "Tibbiyot", "ball": 2},
                 {"text": "Texnologiya", "kasb": "Robotatexnika", "ball": 2},
@@ -70,15 +69,6 @@
                 {"text": "Robototexnika koʻrgazmasi", "kasb": "Robotatexnika", "ball": 2},
                 {"text": "Xalqaro tillar festivali", "kasb": "Filologiya", "ball": 2},
                 {"text": "Biznes-ideyalar tanlovi", "kasb": "Biznes", "ball": 2}
-            ]
-        },
-        {
-            "savol": "Qaysi qurilma sizga kerak?",
-            "variants": [
-                {"text": "VR qoʻlqop", "kasb": "IT", "ball": 2},
-                {"text": "3D printer", "kasb": "Robotatexnika", "ball": 2},
-                {"text": "Tarjimon soat", "kasb": "Filologiya", "ball": 2},
-                {"text": "Hisob-kitob dasturi", "kasb": "Biznes", "ball": 2}
             ]
         },
         {

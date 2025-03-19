@@ -1,35 +1,18 @@
 [
     {
         "id": 1808774257,
-        "name": "Jahongir",
+        "name": "vbj bhdc",
         "address": "Andijon shaxar",
-        "school": "37",
+        "school": "55",
         "phone": "901550280",
         "age": 11,
         "results": {
-            "IT": 13,
-            "Robotatexnika": 26,
-            "Filologiya": 2,
-            "Biznes": 4
+            "IT": 35,
+            "Biznes": 1,
+            "Robotatexnika": 1,
+            "Harbiy": 1
         },
-        "total_score": 27,
+        "total_score": 38,
         "in_test": false
-    },
-    {
-        "id": 1447868051,
-        "name": "Sardorbek Turdaliyev",
-        "address": "Baliqchi tumani",
-        "school": "36",
-        "phone": "999825920",
-        "age": 14,
-        "results": {
-            "IT": 7,
-            "Robotatexnika": 14,
-            "Tibbiyot": 3,
-            "Filologiya": 6,
-            "Biznes": 3
-        },
-        "total_score": 3,
-        "in_test": true
     }
 ]
