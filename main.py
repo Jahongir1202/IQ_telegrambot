@@ -435,23 +435,28 @@ def send_certificate(chat_id, user):
     if os.path.exists(output_path):
         os.remove(output_path)
 
-    def signal_handler(sig, frame):
-        print("Bot to‘xtatildi.")
-        sys.exit(0)
 
-    if threading.current_thread() is threading.main_thread():
-    signal.signal(signal.SIGINT, signal_handler)  # kill buyruqlari
+def signal_handler(sig, frame):
+    print("Bot to‘xtatildi.")
+    sys.exit(0)
 
-    def run_bot():
-        while True:
-            try:
-                print("Bot ishga tushdi...")
-                bot.polling(none_stop=True, timeout=60)
-            except Exception as e:
-                print(f"Xatolik yuz berdi: {e}")
-                time.sleep(5)
 
-    if __name__ == "__main__":
-    signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)  # Ctrl + C
+signal.signal(signal.SIGTERM, signal_handler)  # kill buyruqlari
+
+
+def run_bot():
+    while True:
+        try:
+            print("Bot ishga tushdi...")
+            bot.polling(none_stop=True, timeout=60)
+        except Exception as e:
+            print(f"Xatolik yuz berdi: {e}")
+            time.sleep(5)
+
+
+if __name__ == "__main__":
+    run_bot()
 
 bot.polling(none_stop=True)
+
